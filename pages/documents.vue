@@ -4,9 +4,13 @@
     <input type="text" v-model="query" v-on:keyup="onChange" placeholder="search">
     <ul>
       <li v-for="item in data" :key="item.file">
-        {{ item.title }}
-        <a :href="`/document/${item.articleUrl}`">Link</a>
-        <a :href="'/docs/' + item.file">Doc</a>
+        <doc-card
+          :tags="item.tags"
+          :description="item.description"
+          :pdf="item.file"
+          :link="item.articleUrl"
+          :title="item.title">
+        </doc-card>
       </li>
     </ul>
   </section>
@@ -15,8 +19,9 @@
 <script>
   import Fuse from 'fuse.js';
   import data from '~/data/docs.json';
+  import DocCard from '~/components/DocCard.vue';
 
-  console.log(Fuse);
+  console.log(DocCard);
 
   export default {
     data() {
@@ -24,6 +29,9 @@
         query: '',
         data
       }
+    },
+    components: {
+      DocCard
     },
     methods: {
       onChange($event) {
