@@ -1,11 +1,19 @@
 <template>
   <section class="container">
     <h2>About</h2>
-    <p>This is the about page</p>
+    <p>This is the about page...</p>
   </section>
 </template>
 
+<script>
+import AppLogo from '~/components/AppLogo.vue'
 
+export default {
+  components: {
+    AppLogo
+  }
+}
+</script>
 
 <style>
 .container {

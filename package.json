@@ -5,15 +5,22 @@
   "author": "Ryan Walker <Ryan.Walker@amtrustgroup.com>",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "run-p dev:*",
+    "dev:nuxt": "nuxt",
+    "dev:build-docs": "nodemon --watch docs --exec node docs.build.js --ext json,md,pdf",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate",
+    "generate": "run-s generate:*",
+    "generate:build-docs": "node docs.build.js",
+    "generate:nuxt": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint",
     "build-docs": "nodemon ./docs.build.js"
   },
   "dependencies": {
+    "fs-extra": "^6.0.1",
+    "fuse.js": "^3.2.0",
+    "minimatch": "^3.0.4",
     "nuxt": "^1.0.0"
   },
   "devDependencies": {
@@ -21,6 +28,8 @@
     "eslint": "^4.15.0",
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.7.1",
-    "eslint-plugin-vue": "^4.0.0"
+    "eslint-plugin-vue": "^4.0.0",
+    "markdown": "^0.5.0",
+    "npm-run-all": "^4.1.3"
   }
 }
