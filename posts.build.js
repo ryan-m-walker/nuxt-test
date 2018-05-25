@@ -2,8 +2,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const markdown = require('markdown').markdown;
 
-const kebabCase = require('./utils/kebabCase');
-
 const postsPath = path.join(__dirname, './posts');
 const outputPath = path.join(__dirname, './pages/posts');
 
@@ -28,19 +26,20 @@ const postTemplate = (content) => `
 `;
 
 
-const parsePostsFolder = (post) => {
-  const folderPath = path.join(postsPath, post);
+const parsePostsFolder = (folder) => {
+  const folderPath = path.join(postsPath, folder);
 
   const meta = JSON.parse(fs.readFileSync(path.join(folderPath, 'meta.json')));
   const postObj = {
     ...meta
   };
 
+  postObj['postUrl'] = folder;
+
   const content = fs.readFileSync(path.join(folderPath, 'content.md')).toString();
   const contentMarkdown = markdown.toHTML(content);
-  fs.writeFileSync(path.join(outputPath, kebabCase(postObj.title)) + '.vue', postTemplate(contentMarkdown));
+  fs.writeFileSync(path.join(outputPath, folder) + '.vue', postTemplate(contentMarkdown));
 
-  postObj['postUrl'] = kebabCase(postObj.title);
 
   fs.readdirSync(folderPath).forEach((file) => {
     // Add pdf file name to data. Move file to static docs folder

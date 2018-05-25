@@ -2,8 +2,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const markdown = require('markdown').markdown;
 
-const kebabCase = require('./utils/kebabCase');
-
 const docsPath = path.join(__dirname, './docs');
 const articlesPath = path.join(__dirname, './pages/document');
 
@@ -46,7 +44,7 @@ const parseDocFolder = (folder) => {
   });
 
   if (fs.existsSync(path.join(folderPath, 'article.md'))) {
-    docObj['articleUrl'] = kebabCase(docObj.title);
+    docObj['articleUrl'] = folder;
     fs.writeFileSync(path.join(articlesPath, docObj.articleUrl) + '.vue', articleTemplate(docObj.article));
   }
 

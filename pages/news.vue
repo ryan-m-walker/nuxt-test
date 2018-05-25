@@ -1,16 +1,12 @@
 <template>
   <section>
-    <h2>Documents</h2>
+    <h2>News</h2>
     <input type="text" v-model="query" v-on:keyup="onChange" placeholder="search">
     <ul>
-      <li v-for="item in data" :key="item.file">
-        <doc-card
-          :tags="item.tags"
-          :description="item.description"
-          :pdf="item.file"
-          :link="item.articleUrl"
-          :title="item.title">
-        </doc-card>
+      <li v-for="item in data" :key="item.postUrl">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+        <a :href="`/posts/${item.postUrl}`">Read more</a>
       </li>
     </ul>
   </section>
@@ -18,8 +14,8 @@
 
 <script>
   import Fuse from 'fuse.js';
-  import data from '~/data/docs.json';
-  import DocCard from '~/components/DocCard.vue';
+  import data from '~/data/posts.json';
+
 
   export default {
     data() {
@@ -27,9 +23,6 @@
         query: '',
         data
       }
-    },
-    components: {
-      DocCard
     },
     methods: {
       onChange($event) {
