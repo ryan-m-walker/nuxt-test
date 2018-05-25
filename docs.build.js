@@ -26,13 +26,15 @@ const articleTemplate = (content) => `
       color: teal;
     }
   </style>
-`
-
-
+`;
 
 const parseDocFolder = (folder) => {
   const folderPath = path.join(docsPath, folder);
-  let docObj = {};
+
+  const meta = JSON.parse(fs.readFileSync(path.join(folderPath, 'meta.json')));
+  const docObj = {
+    ...meta
+  };
 
   fs.readdirSync(folderPath).forEach((file) => {
     // Add pdf file name to data. Move file to static docs folder
@@ -41,22 +43,9 @@ const parseDocFolder = (folder) => {
       fs.copyFileSync(path.join(folderPath, file), path.join(__dirname, 'static/docs', file));
     }
 
-    // Add the meta data to the main object
-    if (file === 'meta.json') {
-      const meta = require(path.join(folderPath, file));
-      docObj = {
-        ...docObj,
-        ...meta
-      };
-    }
-
-    if (file === 'article.md') {
-      const article = fs.readFileSync(path.join(folderPath, file)).toString();
-      docObj['article'] = markdown.toHTML(article);
-    }
   });
 
-  if (docObj.article) {
+  if (fs.existsSync(path.join(folderPath, 'article.md'))) {
     docObj['articleUrl'] = kebabCase(docObj.title);
     fs.writeFileSync(path.join(articlesPath, docObj.articleUrl) + '.vue', articleTemplate(docObj.article));
   }
@@ -65,8 +54,6 @@ const parseDocFolder = (folder) => {
 };
 
 fs.readdirSync(docsPath).forEach(parseDocFolder);
-
 fs.writeFileSync(path.join(__dirname, 'data', 'docs.json'), JSON.stringify(docsData));
-
 
 console.log('[docs] Finished building docs');

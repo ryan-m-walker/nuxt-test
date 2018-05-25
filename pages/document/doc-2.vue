@@ -1,7 +1,7 @@
 
   <template>
     <section>
-    <p>This is the second article</p>
+    undefined
     </section>
   </template>
 

@@ -1,5 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
+const markdown = require('markdown').markdown;
+
+const kebabCase = require('./utils/kebabCase');
 
 const postsPath = path.join(__dirname, './posts');
 const outputPath = path.join(__dirname, './pages/posts');
@@ -9,32 +12,49 @@ fs.emptyDirSync(outputPath);
 
 const postsData = [];
 
+
+const postTemplate = (content) => `
+  <template>
+    <section>
+    ${ content }
+    </section>
+  </template>
+
+  <style scoped>
+    h2 {
+      color: teal;
+    }
+  </style>
+`;
+
+
 const parsePostsFolder = (post) => {
   const folderPath = path.join(postsPath, post);
-  const postObj = {};
+
+  const meta = JSON.parse(fs.readFileSync(path.join(folderPath, 'meta.json')));
+  const postObj = {
+    ...meta
+  };
+
+  const content = fs.readFileSync(path.join(folderPath, 'content.md')).toString();
+  const contentMarkdown = markdown.toHTML(content);
+  fs.writeFileSync(path.join(outputPath, kebabCase(postObj.title)) + '.vue', postTemplate(contentMarkdown));
+
+  postObj['postUrl'] = kebabCase(postObj.title);
 
   fs.readdirSync(folderPath).forEach((file) => {
-    if (file.match(/\.pdf$/)) {
-      docObj['file'] = file;
-      fs.copyFileSync(path.join(folderPath, file), path.join(__dirname, 'static/docs', file));
+    // Add pdf file name to data. Move file to static docs folder
+    if (file.match(/\.(jpg|png|jpeg|gif)$/)) {
+      postObj['image'] = file;
+      fs.copyFileSync(path.join(folderPath, file), path.join(__dirname, 'static/images', file));
     }
 
-    if (file === 'meta.json') {
-      const meta = require(path.join(folderPath, file));
-      docObj['meta'] = meta;
-    }
-
-    if (file === 'article.md') {
-      const article = fs.readFileSync(path.join(folderPath, file)).toString();
-      docObj['article'] = article;
-    }
   });
 
-  docsData.push(docObj);
+  postsData.push(postObj);
 }
 
 
-fs.readdirSync(postsPath).forEach((post) => {
-  parsePostsFolder(post);
-  fs.writeFileSync(path.join(__dirname, 'data', 'data.json'), JSON.stringify(postsData));
-});
+fs.readdirSync(postsPath).forEach(parsePostsFolder);
+
+fs.writeFileSync(path.join(__dirname, 'data', 'posts.json'), JSON.stringify(postsData));
